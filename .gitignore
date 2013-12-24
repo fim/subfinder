@@ -1,0 +1,7 @@
+*.pyc
+*.pyo
+*.swp
+*.swn
+*.swo
+build/
+dist/

@@ -1,0 +1,81 @@
+#!/usr/bin/env python
+
+import os
+import sys
+from optparse import OptionParser
+
+execfile('modules/subfinder/version.py')
+
+__selfpath__ = os.path.abspath(os.path.dirname(__file__))
+sys.path.append(__selfpath__ + "/modules")
+
+from subfinder import subtitle
+from subfinder import movie
+
+# This block ensures that ^C interrupts are handled quietly.
+try:
+    import signal
+
+    def exithandler(signum,frame):
+        signal.signal(signal.SIGINT, signal.SIG_IGN)
+        signal.signal(signal.SIGTERM, signal.SIG_IGN)
+        sys.exit(1)
+
+    signal.signal(signal.SIGINT, exithandler)
+    signal.signal(signal.SIGTERM, exithandler)
+    if hasattr(signal, 'SIGPIPE'):
+                signal.signal(signal.SIGPIPE, signal.SIG_DFL)
+
+except KeyboardInterrupt:
+        sys.exit(1)
+
+def main(argv):
+
+    usage = "usage: %prog [options] file"
+    description = "Command line tool to fetch subtitles from OpenSubtitles"
+
+    parser = OptionParser(
+        usage=usage, version=__version__, description=description
+    )
+    parser.disable_interspersed_args()
+    parser.add_option(
+        "-d", "--debug", action="store_true", dest="debug",
+        default=False, help=("enable debug messages")
+    )
+    parser.add_option(
+        "-q", "--quiet", action="store_true", dest="quiet",
+        default=False, help="don't print status messages to stdout"
+    )
+    parser.add_option(
+        "--traceback", action="store_true", dest="trace", default=False,
+        help="print full traceback on exceptions"
+        )
+    parser.add_option(
+        "--disable-colors", action="store_true", dest="color_disable",
+        default=(os.name == 'nt' or not sys.stdout.isatty()),
+        help="disable colors in the output of commands"
+    )
+    parser.add_option(
+        "-s", "--search", action="store_true", dest="store",
+        default=False, help=("Search for subs and print results. Doest't fetch anything")
+    )
+    parser.add_option(
+        "-i", "--interactive", action="store_true", dest="interactive",
+        default=False, help=("Select manually the subtitle to download")
+    )
+    parser.add_option(
+        "-l", "--lang", dest="lang",
+        default="eng", help=("Language code for subtitles (must be in ISO6932)")
+    )
+
+    (options, args) = parser.parse_args()
+
+    if len(args) < 1:
+        parser.error("No file was given")
+
+    m = movie.MovieFile(args[0])
+    s = subtitle.OSService()
+    s.get(m, options.lang, interactive=options.interactive)
+
+if __name__ == "__main__":
+    main(sys.argv[1:])
