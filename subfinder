@@ -30,7 +30,6 @@ except KeyboardInterrupt:
         sys.exit(1)
 
 def main(argv):
-
     usage = "usage: %prog [options] file"
     description = "Command line tool to fetch subtitles from OpenSubtitles"
 
@@ -56,8 +55,8 @@ def main(argv):
         help="disable colors in the output of commands"
     )
     parser.add_option(
-        "-s", "--search", action="store_true", dest="store",
-        default=False, help=("Search for subs and print results. Doest't fetch anything")
+        "-a", "--all", action="store_true", dest="allsubs",
+        default=False, help=("Fetch all subtitles in specified language")
     )
     parser.add_option(
         "-i", "--interactive", action="store_true", dest="interactive",
@@ -73,9 +72,21 @@ def main(argv):
     if len(args) < 1:
         parser.error("No file was given")
 
-    m = movie.MovieFile(args[0])
     s = subtitle.OSService()
-    s.get(m, options.lang, interactive=options.interactive)
+    for f in args:
+        try:
+            print "Getting subtitles for %s" % f
+            m = movie.MovieFile(f)
+            s.get(m, options.lang, interactive=options.interactive,
+                    allsubs=options.allsubs)
+        except Exception, e:
+            print "Couldn't get subs for %s [%s]" % (f, e)
+            import traceback
+            if options.trace:
+                traceback.print_exc()
+            else:
+                formatted_lines = traceback.format_exc().splitlines()
+                logger.error(formatted_lines[-1])
 
 if __name__ == "__main__":
     main(sys.argv[1:])

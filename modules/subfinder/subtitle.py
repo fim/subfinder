@@ -84,7 +84,7 @@ class OSService():
         srt = self.client.DownloadSubtitles(self.token, [idsub])['data'][0]['data']
         return gzip.GzipFile(fileobj=cStringIO.StringIO(srt.decode("base64"))).read()
 
-    def get(self, movie, language="eng", interactive=False):
+    def get(self, movie, language="eng", interactive=False, allsubs=False):
         valid = False
         self.search(movie, language)
         self.sort()
@@ -103,17 +103,24 @@ class OSService():
                 except Exception:
                     print "Invalid selection"
                     continue
-            subid = self.subs[int(sid)]["IDSubtitleFile"]
         else:
-            subid = self.subs[0]["IDSubtitleFile"]
+            sid = 0
 
-        sub = self.fetch(subid)
-        with open("%s/%s.srt" % (movie.dirname,
-            os.path.splitext(movie.filename)[0]), 'w') as f:
-            f.write(sub)
+        subid = self.subs[int(sid)]["IDSubtitleFile"]
+        subformat = self.subs[int(sid)]["SubFormat"]
+        movie.addsub(self.fetch(subid))
 
-        f.close()
+        # if allsubs is True, get all remaining files as well
+        if allsubs:
+            for i,s in enumerate(self.subs):
+                if i == sid: continue
 
+            subid = self.subs[i]["IDSubtitleFile"]
+            subformat = self.subs[i]["SubFormat"]
+            movie.addsub(self.fetch(i))
 
     def upload():
+        """
+        To be implemented
+        """
         pass

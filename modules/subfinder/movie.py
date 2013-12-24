@@ -5,10 +5,13 @@ import struct
 class MovieFile:
 
     nocd = 0
+    supported_filetypes = ('avi','mpeg','mpg','mkv','wmv','mp4')
 
     def __init__(self,filepath):
         if not os.path.exists(filepath):
             raise Exception("File %s doesn't exist" % filepath)
+        if not filepath.endswith(self.supported_filetypes):
+            raise Exception("File doesn't seem to be a video file") # FIXME
         self.filepath = filepath
         self.filename = os.path.basename(filepath)
         self.dirname = os.path.dirname(filepath)
@@ -22,7 +25,7 @@ class MovieFile:
             self.nocd = 1
         else:
             for f in os.listdir(self.dirname):
-                if f.endswith(('avi','mpeg','mpg','mkv','wmv','mp4')):
+                if f.endswith(self.supported_filetypes):
                     if re.match(f, 'CD\d+$'):
                         self.nocd += 1
 
@@ -75,3 +78,30 @@ class MovieFile:
             raise Exception("Can only get bytesize for actual movie file")
 
         return str(os.stat(self.filepath)[6])
+
+    def addsub(self, substr, ext="srt"):
+        """
+        Add a subtitle file to the movie file.
+
+        The name of the file is the same as the name of the movie and if the
+        file already exists an identifier is added just before the extension.
+
+        eg:
+        foo.avi
+        foo.srt
+        foo.1.srt
+        """
+        basename = "%s/%s" % (self.dirname,
+            os.path.splitext(self.filename)[0])
+
+        fname = "%s.%s" % (basename, ext)
+        if os.path.exists(fname):
+            inc = 1
+            while os.path.exists("%s.%s.%s" % (basename, inc, ext)):
+                inc += 1
+
+            fname = "%s.%s.%s" % (basename, inc, ext)
+        with open(fname, 'w') as f:
+            f.write(substr)
+
+        return fname
