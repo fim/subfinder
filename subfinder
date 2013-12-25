@@ -74,19 +74,19 @@ def main(argv):
 
     s = subtitle.OSService()
     for f in args:
+        print "Getting subtitles:"
         try:
-            print "Getting subtitles for %s" % f
+            print " - %s [%s]" % (os.path.basename(f), options.lang)
             m = movie.MovieFile(f)
             s.get(m, options.lang, interactive=options.interactive,
                     allsubs=options.allsubs)
         except Exception, e:
-            print "Couldn't get subs for %s [%s]" % (f, e)
+            print "Couldn't get subs for %s [%s]" % (os.path.basename(f), e)
             import traceback
             if options.trace:
                 traceback.print_exc()
             else:
                 formatted_lines = traceback.format_exc().splitlines()
-                logger.error(formatted_lines[-1])
 
 if __name__ == "__main__":
     main(sys.argv[1:])

@@ -13,9 +13,10 @@ def pprint(data, index=False):
     if not data:
         return
     for index, line in enumerate(data):
-        print "%2s. %30s\t%4s\t%10s" % (index,
+        print "%2s. %30s [%s]\t%4s\t%10s" % (index,
             line['MovieReleaseName'] or line['MovieName'],
-            line['SubRating'], line['SubDownloadsCnt'])
+            line['SubLanguageID'], line['SubRating'],
+            line['SubDownloadsCnt'])
 
 class OSService():
     """
@@ -37,31 +38,32 @@ class OSService():
         return self.client.SearchSubtitles(self.token,
                 [{'sublanguageid':language,
                   'moviehash': movie._hash(),
-                  'moviebytesize': movie._bytesize()}])['data']
+                  'moviebytesize': movie._bytesize()}])['data'] or []
 
     def _searchby_imdbid(self, movie, language="eng"):
-        if movie._getimdbid == None: return []
+        if movie._getimdbid() == None: return []
         return self.client.SearchSubtitles(self.token,
                 [{'sublanguageid':language,
-                  'imdbid': movie._getimdbid()}])
+                  'imdbid': movie._getimdbid()}])['data'] or []
 
     def _searchby_tag(self, movie, language="eng"):
         return self.client.SearchSubtitles(self.token,
                 [{'sublanguageid':language,
-                  'tag': movie.filename}])['data']
+                  'tag': movie.filename}])['data'] or []
 
     def _searchby_query(self, movie, language="eng"):
         return self.client.SearchSubtitles(self.token,
                 [{'sublanguageid':language,
                   'moviehash': movie._hash(),
-                  'moviebytesize': movie._bytesize()}])
+                  'moviebytesize': movie._bytesize()}])['data'] or []
 
     def search(self, movie, language="eng"):
         self.subs = []
-#        self.subs.extend(filter(lambda s: s not in self.subs,
-#            self._searchby_imdbid(movie, language)))
-#        self.subs.extend(filter(lambda s: s not in self.subs,
-#            self._searchby_query(movie, language)))
+
+        self.subs.extend(filter(lambda s: s["IDSubtitle"] not in [m["IDSubtitle"] for m in self.subs],
+            self._searchby_imdbid(movie, language)))
+        self.subs.extend(filter(lambda s: s["IDSubtitle"] not in [m["IDSubtitle"] for m in self.subs],
+            self._searchby_query(movie, language)))
         self.subs.extend(filter(lambda s: s["IDSubtitle"] not in [m["IDSubtitle"] for m in self.subs],
             self._searchby_tag(movie, language)))
         self.subs.extend(filter(lambda s: s["IDSubtitle"] not in [m["IDSubtitle"] for m in self.subs],
@@ -72,7 +74,7 @@ class OSService():
     def sort(self, keys=["SubRating", "SubDownloadsCnt"]):
         #FIXME: to use keys from args
         self.subs = sorted(self.subs, key=lambda k:
-            (k['SubRating'], k['SubDownloadsCnt']), reverse=True)
+            (float(k['SubRating']), int(k['SubDownloadsCnt'])), reverse=True)
         return self.subs
 
     def fetch(self, idsub):
@@ -89,7 +91,7 @@ class OSService():
         self.search(movie, language)
         self.sort()
         if not self.subs:
-            raise("No subtitles found")
+            raise Exception("No subtitles found")
         if interactive:
             pprint(self.subs)
             while not valid:
