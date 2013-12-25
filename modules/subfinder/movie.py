@@ -7,14 +7,15 @@ class MovieFile:
     nocd = 0
     supported_filetypes = ('avi','mpeg','mpg','mkv','wmv','mp4')
 
-    def __init__(self,filepath):
+    def __init__(self, filepath):
         if not os.path.exists(filepath):
             raise Exception("File %s doesn't exist" % filepath)
         if not filepath.endswith(self.supported_filetypes):
             raise Exception("File doesn't seem to be a video file") # FIXME
-        self.filepath = filepath
-        self.filename = os.path.basename(filepath)
-        self.dirname = os.path.dirname(filepath)
+        afilepath = os.path.abspath(filepath)
+        self.filepath = afilepath
+        self.filename = os.path.basename(afilepath)
+        self.dirname = os.path.dirname(afilepath)
         self.nocd = self._nocd()
 
     def _nocd(self):
