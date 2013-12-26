@@ -5,6 +5,18 @@ import cStringIO
 import gzip
 from movie import MovieFile
 
+def aton(num):
+    """
+    Parse string and return an int/float to use for numerical sorting
+
+    On error returns 0
+    """
+
+    try:
+        return int(num)
+    except ValueError:
+        return float(num)
+
 def pprint(data, index=False):
     """
     Format/print subtitle results
@@ -14,7 +26,7 @@ def pprint(data, index=False):
         return
     for index, line in enumerate(data):
         print "%2s. %30s [%s]\t%4s\t%10s" % (index,
-            line['MovieReleaseName'] or line['MovieName'],
+            (line['MovieReleaseName'] or line['MovieName']).encode('utf-8'),
             line['SubLanguageID'], line['SubRating'],
             line['SubDownloadsCnt'])
 
@@ -72,9 +84,8 @@ class OSService():
         return self.subs
 
     def sort(self, keys=["SubRating", "SubDownloadsCnt"]):
-        #FIXME: to use keys from args
-        self.subs = sorted(self.subs, key=lambda k:
-            (float(k['SubRating']), int(k['SubDownloadsCnt'])), reverse=True)
+        self.subs = sorted(self.subs, key=lambda s:
+            tuple(aton(s[k]) for k in keys), reverse=True)
         return self.subs
 
     def fetch(self, idsub):
