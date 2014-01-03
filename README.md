@@ -41,10 +41,16 @@ $ subfinder -l ell /path/to/series/season1/*.mkv
 - Get a list of all language subtitles for a movie
 
 ```sh
-$ subfinder -l all /path/to/movie.avi
+$ subfinder -i -l all /path/to/movie.avi
 ```
 
-Powered by ![Opensubtitles.org API][opensublogo]
+- Get a list of specific language subtitles for a movie
+
+```sh
+$ subfinder -i -l eng,ell /path/to/movie.avi
+```
+
+Powered by [![Opensubtitles.org API][opensublogo]][opensub]
 
 [opensub]: http://www.opensubtitles.org
 [opensublogo]: http://static.opensubtitles.org/gfx/logo.gif
