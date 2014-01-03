@@ -5,13 +5,21 @@ import struct
 class MovieFile:
 
     nocd = 0
-    supported_filetypes = ('avi','mpeg','mpg','mkv','wmv','mp4')
+    supported_filetypes = (
+        '3g2', '3gp', '3gp2', '3gpp', '60d', 'ajp', 'asf', 'asx', 'avchd', 'avi',
+        'bik', 'bix', 'box', 'cam', 'dat', 'divx', 'dmf', 'dv', 'dvr-ms', 'evo',
+        'flc', 'fli', 'flic', 'flv', 'flx', 'gvi', 'gvp', 'h264', 'm1v', 'm2p',
+        'm2ts', 'm2v', 'm4e', 'm4v', 'mjp', 'mjpeg', 'mjpg', 'mkv', 'moov', 'mov',
+        'movhd', 'movie', 'movx', 'mp4', 'mpe', 'mpeg', 'mpg', 'mpv', 'mpv2',
+        'mxf', 'nsv', 'nut', 'ogg', 'ogm', 'omf', 'ps', 'qt', 'ram', 'rm', 'rmvb',
+        'swf', 'ts', 'vfw', 'vid', 'video', 'viv', 'vivo', 'vob', 'vro', 'wm',
+        'wmv', 'wmx', 'wrap', 'wvx', 'wx', 'x264', 'xvid')
 
     def __init__(self, filepath):
         if not os.path.exists(filepath):
             raise Exception("File %s doesn't exist" % filepath)
         if not filepath.endswith(self.supported_filetypes):
-            raise Exception("File doesn't seem to be a video file") # FIXME
+            raise Exception("File doesn't seem to be a supported video file")
         afilepath = os.path.abspath(filepath)
         self.filepath = afilepath
         self.filename = os.path.basename(afilepath)
