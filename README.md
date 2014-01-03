@@ -1,7 +1,7 @@
 Sub finder tool for OpenSubtitles API
 ====================
 
-This is a simple app to search & fetch sub files from OpenSubtitles
+This is a simple tool to search & fetch subtitle files from [OpenSubtitles.org] [opensub]
 
 Installation
 ------------
@@ -37,3 +37,14 @@ $ subfinder -l ell -a /path/to/movie.avi
 ```sh
 $ subfinder -l ell /path/to/series/season1/*.mkv
 ```
+
+- Get a list of all language subtitles for a movie
+
+```sh
+$ subfinder -l all /path/to/movie.avi
+```
+
+Powered by ![Opensubtitles.org API][opensublogo]
+
+[opensub]: http://www.opensubtitles.org
+[opensublogo]: http://static.opensubtitles.org/gfx/logo.gif

@@ -1,0 +1,6 @@
+A generic TODO list so I don't forget:
+
+ * Add unittests
+ * Add support for multipart movie files
+ * Do some evaluations for the autofetch logic
+ * Add a proper logger
