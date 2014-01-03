@@ -74,8 +74,8 @@ def main(argv):
         parser.error("No file was given")
 
     s = subtitle.OSService()
+    print "Getting subtitles:"
     for f in args:
-        print "Getting subtitles:"
         try:
             print " - %s [%s]" % (os.path.basename(f), options.lang)
             m = movie.MovieFile(f)
