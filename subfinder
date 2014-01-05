@@ -73,21 +73,21 @@ def main(argv):
     if len(args) < 1:
         parser.error("No file was given")
 
-    s = subtitle.OSService()
-    print "Getting subtitles:"
-    for f in args:
-        try:
+    try:
+        s = subtitle.OSService()
+        print "Getting subtitles:"
+        for f in args:
             print " - %s [%s]" % (os.path.basename(f), options.lang)
             m = movie.MovieFile(f)
             s.get(m, options.lang, interactive=options.interactive,
                     allsubs=options.allsubs)
-        except Exception, e:
-            print "Couldn't get subs for %s [%s]" % (os.path.basename(f), e)
-            import traceback
-            if options.trace:
-                traceback.print_exc()
-            else:
-                formatted_lines = traceback.format_exc().splitlines()
+    except Exception, e:
+        print "Error getting subtitles: %s" % e
+        import traceback
+        if options.trace:
+            traceback.print_exc()
+        else:
+            formatted_lines = traceback.format_exc().splitlines()
 
 if __name__ == "__main__":
     main(sys.argv[1:])
