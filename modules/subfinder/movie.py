@@ -40,10 +40,13 @@ class MovieFile:
 
     def _getimdbid(self):
         for f in os.listdir(self.dirname):
-            if f.endswith('nfo'):
-                with open(os.path.join(self.dirname, f), 'r') as fp:
-                    m = re.search("www\.imdb\.com/title/tt(\d+)/", fp.read())
-                    if m: return m.group(1)
+            if f.endswith('.nfo'):
+                try:
+                    with open(os.path.join(self.dirname, f), 'r') as fp:
+                        m = re.search("www\.imdb\.com/title/tt(\d+)/", fp.read())
+                        if m: return m.group(1)
+                except Exception,e:
+                    pass
 
         return None
 
