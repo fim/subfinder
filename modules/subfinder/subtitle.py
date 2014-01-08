@@ -41,7 +41,7 @@ class OSService():
     def __init__(self):
         self.client = xmlrpclib.ServerProxy("http://api.opensubtitles.org/xml-rpc",
                 allow_none=True)
-        reply = self.client.LogIn("","","eng", "OS Test User Agent")
+        reply = self.client.LogIn("","","eng", "PySubfinder v0.1")
         if reply['status'] != "200 OK":
             raise Exception("Failed to connect: %s" %reply['status'])
         self.token = reply['token']
